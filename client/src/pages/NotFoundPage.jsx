@@ -12,7 +12,9 @@ const NotFound = () => {
         
         const response = await fetch("/api/404")
         
-        const data = await response.json()
+        const data = await response.json();
+
+        console.log("Mounted")
         
         
         setNotFoundMsg(data.message || "Page not found")

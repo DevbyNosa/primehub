@@ -5,6 +5,7 @@ import morgan from 'morgan';
 import compression from 'compression';
 import dotenv from 'dotenv';
 import { pool } from './config/database.js';
+import apiRoutes from './routes/api.js'
 
 import path from 'path'
 import { fileURLToPath } from 'url'
@@ -59,6 +60,8 @@ app.use(compression());
 
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ extended: true, limit: '50mb' }));
+
+app.use("/", apiRoutes);
 
 // ============ ROUTES ============
 
