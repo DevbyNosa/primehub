@@ -1,18 +1,26 @@
 // client/src/pages/ContactPage.jsx
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { FaMapMarkerAlt, FaPhone, FaEnvelope, FaClock } from 'react-icons/fa'
 import { Helmet } from 'react-helmet-async'
 import HeaderComponent from '../components/Header'
 import Footer from '../components/Footer'
+import FadeIn from '../components/animations/FadeIn'
+import SlideIn from '../components/animations/SlideIn'
+
 
 export default function ContactPage() {
+  useEffect(() => {
+     document.title = "Contact - PrimeHub"
+   }, [])
+
   const [formData, setFormData] = useState({
     name: '',
     email: '',
     subject: '',
     message: ''
   })
-  const [status, setStatus] = useState('idle')
+  const [status, setStatus] = useState('idle');
+ 
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value })
@@ -23,13 +31,15 @@ export default function ContactPage() {
     setStatus('loading')
 
     try {
-      // Send to backend
-      // await fetch('/api/contact', {
-      //   method: 'POST',
-      //   body: JSON.stringify(formData)
-      // })
-      setStatus('success')
-      setFormData({ name: '', email: '', subject: '', message: '' })
+      
+      const res = await fetch('/api/contact', {
+         method: 'POST',
+         body: JSON.stringify(formData)
+       })
+      setStatus('success');
+
+      console.log(res)
+      setFormData({ name: '', email: '', subject: '', message: '' });
       setTimeout(() => setStatus('idle'), 3000)
     } catch (error) {
       setStatus('error')
@@ -39,15 +49,14 @@ export default function ContactPage() {
 
   return (
     <>
-      <Helmet>
-        <title>Contact Us - PrimeHub</title>
-      </Helmet>
+     
       
-      <header>
+    
         <HeaderComponent />
-      </header>
+     
 
     <main>
+      <FadeIn>
       <div className="w-[90%] mt-[5%] max-w-6xl mx-auto py-20">
         <h1 className="text-4xl font-bold mb-2">Contact Us</h1>
         <p className="text-gray-600 mb-12">We'd love to hear from you. Drop us a message and we'll respond as soon as possible.</p>
@@ -106,6 +115,7 @@ export default function ContactPage() {
                     value={formData.name}
                     onChange={handleChange}
                     className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-black"
+                    placeholder='Enter Full name'
                     required
                   />
                 </div>
@@ -117,6 +127,7 @@ export default function ContactPage() {
                     value={formData.email}
                     onChange={handleChange}
                     className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-black"
+                    placeholder='Email Address'
                     required
                   />
                 </div>
@@ -130,6 +141,7 @@ export default function ContactPage() {
                   value={formData.subject}
                   onChange={handleChange}
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-black"
+                  placeholder='Subject title'
                   required
                 />
               </div>
@@ -142,6 +154,7 @@ export default function ContactPage() {
                   value={formData.message}
                   onChange={handleChange}
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-black resize-none"
+                  placeholder='Leave a message here...'
                   required
                 />
               </div>
@@ -164,11 +177,12 @@ export default function ContactPage() {
           </div>
         </div>
       </div>
+      </FadeIn>
       </main>
 
-      <footer>
+   
         <Footer />
-      </footer>
+     
     </>
   )
 }

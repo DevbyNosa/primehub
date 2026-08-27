@@ -40,7 +40,7 @@ export default function ProductCard({ product }) {
             onClick={() => addToCart(product)}  // ← Add to cart
             className="text-xs uppercase tracking-wider border border-black px-4 py-1.5 hover:bg-black hover:text-white transition-all duration-200 w-full sm:w-auto"
           >
-            Add
+            Add 
           </button>
         </div>
       </div>

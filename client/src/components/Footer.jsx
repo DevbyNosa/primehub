@@ -1,8 +1,10 @@
 
 import { Link } from 'react-router-dom'
 import { FaFacebook, FaInstagram, FaTwitter, FaYoutube } from 'react-icons/fa'
+import { useState } from 'react';
 
 export default function Footer() {
+   const [year, setYear] = useState(new Date().getFullYear());
   return (
     <footer className="bg-black text-white mt-20">
       <div className="w-[90%] max-w-7xl mx-auto py-16">
@@ -63,7 +65,7 @@ export default function Footer() {
 
         {/* Bottom Bar */}
         <div className="border-t border-gray-800 mt-12 pt-6 flex flex-col sm:flex-row justify-between items-center text-xs text-gray-500">
-          <p>© 2024 PrimeHub. All rights reserved.</p>
+          <p>© {year} PrimeHub. All rights reserved.</p>
           <div className="flex gap-6 mt-2 sm:mt-0">
             <Link to="/privacy" className="hover:text-white transition">Privacy Policy</Link>
             <Link to="/terms" className="hover:text-white transition">Terms of Service</Link>

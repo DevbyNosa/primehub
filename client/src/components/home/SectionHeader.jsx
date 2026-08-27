@@ -3,7 +3,7 @@ import { FaArrowRight } from "react-icons/fa"
 export default function SectionHeader({title, link, linkText}) {
   return(
      <div className="flex items-center justify-between  my-15">
-        <h3 className="text-3xl font-semibold text-black">{title}</h3>
+        <h3 className="text-3xl font-semibold text-black ">{title}</h3>
         
         <Link 
         

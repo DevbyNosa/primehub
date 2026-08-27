@@ -6,6 +6,10 @@ import compression from 'compression';
 import dotenv from 'dotenv';
 import { pool } from './config/database.js';
 import apiRoutes from './routes/api.js'
+import authRoutes from './routes/auth.js'  
+import pageRoutes from './routes/pages.js'
+import sessionConfig from './config/session.js'
+
 
 import path from 'path'
 import { fileURLToPath } from 'url'
@@ -14,20 +18,16 @@ const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
 
 
-// Load environment variables
+
 dotenv.config();
 
 const app = express();
-const PORT = process.env.PORT || 5000; // Change to 5000 (3000 is React)
+const PORT = process.env.PORT || 5000;
 
-// ============ MIDDLEWARE ============
 
-// Security
 app.use(helmet({
     crossOriginResourcePolicy: { policy: "cross-origin" }
 }));
-
-
 
 const allowedOrigins = [
     'http://localhost:5173',  
@@ -37,9 +37,7 @@ const allowedOrigins = [
 
 app.use(cors({
     origin: function (origin, callback) {
-       
         if (!origin) return callback(null, true);
-        
         if (allowedOrigins.indexOf(origin) !== -1) {
             callback(null, true);
         } else {
@@ -54,17 +52,22 @@ app.use(cors({
 // Logging
 app.use(morgan('dev'));
 
-
+// Compression
 app.use(compression());
 
-
+// Body parsers
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ extended: true, limit: '50mb' }));
 
+
+app.use(sessionConfig);
+
+// Routes
 app.use("/", apiRoutes);
+app.use("/api/auth", authRoutes);
+app.use("/", pageRoutes)
 
 // ============ ROUTES ============
-
 
 app.get('/api/test', (req, res) => {
     res.json({ 
@@ -73,7 +76,6 @@ app.get('/api/test', (req, res) => {
         timestamp: new Date()
     });
 });
-
 
 app.get('/health', (req, res) => {
     res.status(200).json({ 
@@ -94,7 +96,6 @@ app.use('/*splat', (req, res) => {
     res.status(404).json({ message: 'Not found' })
 })
 
-
 app.use((err, req, res, next) => {
     console.error('Error:', err.stack);
     res.status(err.status || 500).json({
@@ -108,5 +109,5 @@ app.use((err, req, res, next) => {
 
 app.listen(PORT, () => {
     console.log(`🚀 Server running on http://localhost:${PORT}`);
-    
+    console.log(`📍 Environment: ${process.env.NODE_ENV || 'development'}`);
 });

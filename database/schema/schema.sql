@@ -30,6 +30,12 @@ CREATE TABLE orders (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
+CREATE TABLE products (
+    id SERIAL PRIMARY KEY,
+    title VARCHAR(255),
+    
+)
+
 CREATE TABLE order_items (
     id SERIAL PRIMARY KEY,
     order_id INTEGER REFERENCES orders(id) ON DELETE CASCADE,
@@ -113,6 +119,29 @@ CREATE TABLE reviews (
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
    
     UNIQUE(user_id, product_id)
+);
+
+CREATE TABLE contact (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(255),
+    email VARCHAR(255),
+    subject VARCHAR(255),
+    message Text
+);
+
+CREATE TABLE newsletter_subscribers (
+  id SERIAL PRIMARY KEY,
+  email VARCHAR(255) UNIQUE,
+  subscribed_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+)
+
+-- ============ SESSION TABLE ===========
+
+CREATE TABLE IF NOT EXISTS "session" (
+  "sid" VARCHAR NOT NULL COLLATE "default",
+  "sess" JSON NOT NULL,
+  "expire" TIMESTAMP(6) NOT NULL,
+  CONSTRAINT "session_pkey" PRIMARY KEY ("sid")
 );
 
 

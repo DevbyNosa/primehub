@@ -7,6 +7,10 @@ const NotFound = () => {
   const location = useLocation()
 
   useEffect(() => {
+    document.title = "404 - PrimeHub"
+  })
+
+  useEffect(() => {
     const fetch404Message = async () => {
       try {
         
