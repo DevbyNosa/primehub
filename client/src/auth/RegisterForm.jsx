@@ -45,6 +45,7 @@ import { FaGoogle } from "react-icons/fa";
       if(password.length < 6) {
         setStatus('error');
         setMessage("Password must be above 6 characters");
+        setLoading(false);
         setTimeout(() => {
         setStatus('idle')
         setMessage('');
@@ -52,20 +53,12 @@ import { FaGoogle } from "react-icons/fa";
           }, 4000)
 
         return;
-      } else if (password.length > 100) {
-        setStatus('error');
-        setMessage("Password must be below 100 characters");
-        setTimeout(() => {
-        setStatus('idle')
-        setMessage('');
-    }, 4000)
-        return;
-      }
+      } 
     try {
         const res = await fetch("/api/auth/register", {
           method: 'POST',
           headers: { 'Content-Type': 'application/json'},
-          body: JSON.stringify({name,email, number, password }),
+          body: JSON.stringify( {name, email, number, password }),
           credentials: 'include'
         })
 
@@ -82,6 +75,10 @@ import { FaGoogle } from "react-icons/fa";
         } else {
           setStatus('error');
           setMessage(data.message || 'Something went wrong');
+           setTimeout(() => {
+        setStatus('idle')
+        setMessage('');
+      }, 4000)
         }
 
         
@@ -146,6 +143,7 @@ import { FaGoogle } from "react-icons/fa";
           <input 
             type="password" 
             onChange={((e) => setPassword(e.target.value))}
+            value={password}
             placeholder="Password"     
             className="p-3 border border-gray-300 rounded-lg focus:outline-none focus:border-black transition"
             required

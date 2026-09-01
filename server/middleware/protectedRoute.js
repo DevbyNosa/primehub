@@ -2,7 +2,7 @@
 export function CustomerRouteProtection(req, res, next) {
   try {
     if (!req.session.user) {
-      // ✅ Return 401 (Unauthorized) instead of redirect
+   
       return res.status(401).json({
         success: false,
         message: 'Not authenticated. Please login.'

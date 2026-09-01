@@ -1,10 +1,18 @@
-// client/src/context/CartContext.jsx
-import { createContext, useState, useContext } from 'react'
+import { createContext, useState, useContext, useEffect } from 'react'
 
 const CartContext = createContext()
 
 export const CartProvider = ({ children }) => {
-  const [cart, setCart] = useState([])
+
+  const [cart, setCart] = useState(() => {
+    const saved = localStorage.getItem('cart')
+    return saved ? JSON.parse(saved) : []
+  })
+
+ 
+  useEffect(() => {
+    localStorage.setItem('cart', JSON.stringify(cart))
+  }, [cart])
 
   const addToCart = (product) => {
     setCart((prev) => {
@@ -36,6 +44,11 @@ export const CartProvider = ({ children }) => {
     )
   }
 
+  const clearCart = () => {
+    setCart([])
+    localStorage.removeItem('cart')
+  }
+
   const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0)
 
   const totalPrice = cart.reduce((sum, item) => sum + item.price * item.quantity, 0)
@@ -46,6 +59,7 @@ export const CartProvider = ({ children }) => {
       addToCart, 
       removeFromCart, 
       updateQuantity, 
+      clearCart,
       totalItems, 
       totalPrice 
     }}>

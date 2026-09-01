@@ -22,7 +22,7 @@ export async function RegisterAccount(req, res) {
     if(selectTable.rows.length >= 1) {
       return res.status(400).json({
         success: false,
-        message: "This email already exist"
+        message: "This email already exist."
       });
     }
      

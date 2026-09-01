@@ -1,3 +1,4 @@
+-- ============ USERS ============
 CREATE TABLE users (
     id SERIAL PRIMARY KEY,
     name VARCHAR(100) NOT NULL,
@@ -9,12 +10,42 @@ CREATE TABLE users (
     avatar VARCHAR(255),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-    
 );
 
+-- ============ CATEGORIES ============
+CREATE TABLE categories (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(50) NOT NULL,
+    slug VARCHAR(50) UNIQUE NOT NULL,
+    description TEXT,
+    image VARCHAR(255),
+    parent_id INTEGER REFERENCES categories(id),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- ============ PRODUCTS ============
+CREATE TABLE products (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(200) NOT NULL,
+    slug VARCHAR(200) UNIQUE NOT NULL,
+    description TEXT,
+    price DECIMAL(10,2) NOT NULL,
+    compare_price DECIMAL(10,2),
+    stock_quantity INTEGER DEFAULT 0,
+    category_id INTEGER REFERENCES categories(id),
+    images TEXT[],
+    is_active BOOLEAN DEFAULT true,
+    is_featured BOOLEAN DEFAULT false,
+    ratings DECIMAL(3,2) DEFAULT 0,
+    num_reviews INTEGER DEFAULT 0,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- ============ ORDERS ============
 CREATE TABLE orders (
     id SERIAL PRIMARY KEY,
-    user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,  -- Foreign key
+    user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
     order_number VARCHAR(50) UNIQUE NOT NULL,
     status VARCHAR(50) DEFAULT 'pending',
     total_amount DECIMAL(10,2) NOT NULL,
@@ -24,26 +55,27 @@ CREATE TABLE orders (
     shipping_country VARCHAR(50) NOT NULL,
     shipping_zip VARCHAR(20) NOT NULL,
     phone VARCHAR(20) NOT NULL,
-    
     payment_method VARCHAR(50),
     payment_status VARCHAR(50) DEFAULT 'pending',
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    tracking_number VARCHAR(100),
+    notes TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE TABLE products (
-    id SERIAL PRIMARY KEY,
-    title VARCHAR(255),
-    
-)
+ALTER TABLE orders ADD COLUMN payment_reference VARCHAR(100);
 
+-- ============ ORDER ITEMS ============
 CREATE TABLE order_items (
     id SERIAL PRIMARY KEY,
     order_id INTEGER REFERENCES orders(id) ON DELETE CASCADE,
     product_id INTEGER REFERENCES products(id),
     product_name VARCHAR(200) NOT NULL,
+    product_image VARCHAR(255),
     quantity INTEGER NOT NULL,
     price DECIMAL(10,2) NOT NULL,
-    total DECIMAL(10,2) NOT NULL
+    total DECIMAL(10,2) NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 -- ============ PAYMENTS ============
@@ -51,35 +83,45 @@ CREATE TABLE payments (
     id SERIAL PRIMARY KEY,
     order_id INTEGER REFERENCES orders(id) ON DELETE CASCADE,
     user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
-    
-    -- Payment details
     amount DECIMAL(10,2) NOT NULL,
     currency VARCHAR(10) DEFAULT 'NGN',
-    payment_method VARCHAR(50) NOT NULL,           -- flutterwave, paystack, cod, card, bank_transfer
-    
-    -- Transaction references
+    payment_method VARCHAR(50) NOT NULL,
     transaction_reference VARCHAR(100) UNIQUE NOT NULL,
-    payment_reference VARCHAR(100),                
-    status VARCHAR(20) DEFAULT 'pending',          
-    
-    
+    payment_reference VARCHAR(100),
+    status VARCHAR(20) DEFAULT 'pending',
     gateway_response JSONB,
-    
-   
     customer_email VARCHAR(100),
     customer_phone VARCHAR(20),
     customer_name VARCHAR(100),
-    
-   
     initiated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     completed_at TIMESTAMP,
     refunded_at TIMESTAMP,
-    
-    
     notes TEXT
 );
 
+-- ============ REVIEWS ============
+CREATE TABLE reviews (
+    id SERIAL PRIMARY KEY,
+    user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
+    product_id INTEGER REFERENCES products(id) ON DELETE CASCADE,
+    rating INTEGER CHECK (rating >= 1 AND rating <= 5) NOT NULL,
+    comment TEXT,
+    status VARCHAR(20) DEFAULT 'pending',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE(user_id, product_id)
+);
 
+-- ============ WISHLIST ============
+CREATE TABLE wishlist (
+    id SERIAL PRIMARY KEY,
+    user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
+    product_id INTEGER REFERENCES products(id) ON DELETE CASCADE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE(user_id, product_id)
+);
+
+-- ============ SUPPORT TICKETS ============
 CREATE TABLE support_tickets (
     id SERIAL PRIMARY KEY,
     user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
@@ -94,7 +136,7 @@ CREATE TABLE support_tickets (
     resolved_at TIMESTAMP
 );
 
-
+-- ============ SUPPORT MESSAGES ============
 CREATE TABLE support_messages (
     id SERIAL PRIMARY KEY,
     ticket_id INTEGER REFERENCES support_tickets(id) ON DELETE CASCADE,
@@ -104,61 +146,50 @@ CREATE TABLE support_messages (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
--- ============ REVIEWS ============
-CREATE TABLE reviews (
-    id SERIAL PRIMARY KEY,
-    user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
-    product_id INTEGER REFERENCES products(id) ON DELETE CASCADE,
-    
-   
-    rating INTEGER CHECK (rating >= 1 AND rating <= 5) NOT NULL,
-    comment TEXT,
-    status VARCHAR(20) DEFAULT 'pending',
-    
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-   
-    UNIQUE(user_id, product_id)
-);
-
+-- ============ CONTACT ============
 CREATE TABLE contact (
     id SERIAL PRIMARY KEY,
     name VARCHAR(255),
     email VARCHAR(255),
     subject VARCHAR(255),
-    message Text
+    message TEXT,
+    is_read BOOLEAN DEFAULT false,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
+-- ============ NEWSLETTER SUBSCRIBERS ============
 CREATE TABLE newsletter_subscribers (
-  id SERIAL PRIMARY KEY,
-  email VARCHAR(255) UNIQUE,
-  subscribed_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-)
-
--- ============ SESSION TABLE ===========
-
-CREATE TABLE IF NOT EXISTS "session" (
-  "sid" VARCHAR NOT NULL COLLATE "default",
-  "sess" JSON NOT NULL,
-  "expire" TIMESTAMP(6) NOT NULL,
-  CONSTRAINT "session_pkey" PRIMARY KEY ("sid")
+    id SERIAL PRIMARY KEY,
+    email VARCHAR(255) UNIQUE NOT NULL,
+    subscribed_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
+-- ============ SESSION ============
+CREATE TABLE IF NOT EXISTS "session" (
+    "sid" VARCHAR NOT NULL COLLATE "default",
+    "sess" JSON NOT NULL,
+    "expire" TIMESTAMP(6) NOT NULL,
+    CONSTRAINT "session_pkey" PRIMARY KEY ("sid")
+);
 
+-- ==========================================
+-- INDEXES
+-- ==========================================
+CREATE INDEX idx_products_category ON products(category_id);
+CREATE INDEX idx_products_price ON products(price);
+CREATE INDEX idx_orders_user ON orders(user_id);
+CREATE INDEX idx_orders_status ON orders(status);
+CREATE INDEX idx_payments_order ON payments(order_id);
+CREATE INDEX idx_payments_user ON payments(user_id);
+CREATE INDEX idx_payments_status ON payments(status);
+CREATE INDEX idx_payments_reference ON payments(transaction_reference);
 CREATE INDEX idx_reviews_product ON reviews(product_id);
 CREATE INDEX idx_reviews_user ON reviews(user_id);
-CREATE INDEX idx_reviews_rating ON reviews(rating);
-
--- ============ INDEXES ============
 CREATE INDEX idx_tickets_user ON support_tickets(user_id);
 CREATE INDEX idx_tickets_status ON support_tickets(status);
 CREATE INDEX idx_tickets_number ON support_tickets(ticket_number);
 CREATE INDEX idx_tickets_order ON support_tickets(order_id);
 CREATE INDEX idx_messages_ticket ON support_messages(ticket_id);
 CREATE INDEX idx_messages_user ON support_messages(user_id);
-
-
-CREATE INDEX idx_payments_order ON payments(order_id);
-CREATE INDEX idx_payments_user ON payments(user_id);
-CREATE INDEX idx_payments_status ON payments(status);
-CREATE INDEX idx_payments_reference ON payments(transaction_reference);
+CREATE INDEX idx_wishlist_user ON wishlist(user_id);
+CREATE INDEX idx_wishlist_product ON wishlist(product_id);

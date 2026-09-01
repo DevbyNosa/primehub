@@ -64,7 +64,7 @@ export async function GoogleAuthRegistration(req, res) {
             avatar: user.rows[0].avatar,
         };
         
-        res.redirect('/dashboard');
+        res.redirect('http://localhost:5173/dashboard');
     } catch (error) {
         console.error('Google OAuth Error:', error.response?.data || error.message);
         res.redirect('/login?error=auth_failed');

@@ -12,18 +12,38 @@ import DashboardPage from './pages/Dashboard/DashboardPage.jsx';
 import OrdersPage from './pages/Dashboard/OrdersPage.jsx';
 import WishlistPage from './pages/Dashboard/WishlistPage.jsx';
 import ProtectedRoute from './auth/protection/ProtectedRoute.jsx';
+import SettingsPage from './pages/Dashboard/SettingsPage.jsx';
+import CheckoutPage from './pages/CheckoutPage.jsx';
+import ProductDetailPage from './pages/ProductDetailsPage.jsx';
+import PublicRoute from './auth/protection/PublicRoute.jsx';
+import PaymentVerify from './pages/paymentVerify.jsx';
+import OrderSuccessPage from './pages/OrderSuccess.jsx';
+
 function App() {
   
 
   return (
     <Routes>
      <Route path="/" element={<HomePage />} />
-     <Route path="/login" element={<LoginPage />} />
+     <Route path="/login" element={
+      <PublicRoute>
+        <LoginPage />
+      </PublicRoute>
+    } />
+
+    <Route path="/register" element={
+      <PublicRoute>
+        <RegisterPage />
+      </PublicRoute>
+    } />
      <Route path="/contact" element={<ContactPage />} />
      <Route path="/about" element={<AboutPage />} />
      <Route path="/shop" element={<ShopPage />} />
      <Route path="/categories" element={<CategoriesPage />}/>
-     <Route path="/register" element={<RegisterPage />} />
+    
+     <Route path="/payment/verify" element={<PaymentVerify />} />
+     <Route path="/product/:slug" element={<ProductDetailPage />} />
+     
      <Route path="/dashboard" element={
       <ProtectedRoute>
       <DashboardPage />
@@ -40,6 +60,24 @@ function App() {
       </ProtectedRoute>
       } />
 
+       <Route path="/dashboard/settings" element={
+      <ProtectedRoute>
+      <SettingsPage/>
+      </ProtectedRoute>
+      } />
+
+       <Route path="/checkout" element={
+      <ProtectedRoute>
+       <CheckoutPage />
+      </ProtectedRoute>
+      } />
+
+      <Route path="/order-success" element={
+      <ProtectedRoute>
+      <OrderSuccessPage />
+      </ProtectedRoute>
+      } />
+    
      <Route path="*" element={<NotFound />} />
 
     
