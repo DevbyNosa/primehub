@@ -2,6 +2,13 @@ import { createContext, useState, useContext, useEffect } from 'react'
 
 const CartContext = createContext()
 
+const getProductImage = (product) => (
+  product.image ||
+  product.image_url ||
+  product.images?.[0] ||
+  '/placeholder.jpg'
+)
+
 export const CartProvider = ({ children }) => {
 
   const [cart, setCart] = useState(() => {
@@ -62,9 +69,13 @@ export const CartProvider = ({ children }) => {
             : item
         )
       }
-      return [...prev, { ...product, quantity: hasStockLimit
-        ? Math.min(requestedQuantity, Number(product.stock_quantity))
-        : requestedQuantity }]
+      return [...prev, {
+        ...product,
+        image: getProductImage(product),
+        quantity: hasStockLimit
+          ? Math.min(requestedQuantity, Number(product.stock_quantity))
+          : requestedQuantity
+      }]
     })
     return true
   }

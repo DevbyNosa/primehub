@@ -313,7 +313,7 @@ return (
               {cart.map((item) => (
                 <div key={item.id} className="flex gap-3 items-center">
                   <img 
-                    src={item.image} 
+                    src={item.image || item.image_url || item.images?.[0] || '/placeholder.jpg'} 
                     alt={item.name}
                     className="w-12 h-12 object-cover rounded border border-gray-200 flex-shrink-0"
                   />

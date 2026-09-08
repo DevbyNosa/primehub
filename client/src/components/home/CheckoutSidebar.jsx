@@ -52,7 +52,7 @@ const CheckoutSidebar = ({ isOpen, onClose }) => {
               <div key={item.id} className="flex gap-3 border-b border-gray-100 pb-3">
                 {/* Image */}
                 <img 
-                  src={item.image} 
+                  src={item.image || item.image_url || item.images?.[0] || '/placeholder.jpg'} 
                   alt={item.name}
                   className="w-16 h-16 object-cover"
                 />
