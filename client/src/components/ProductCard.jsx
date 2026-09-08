@@ -20,6 +20,7 @@ export default function ProductCard({ product }) {
 
  
   const inWishlist = isInWishlist(product.id)
+  const isOutOfStock = product.stock_quantity !== undefined && Number(product.stock_quantity) <= 0
 
   const handleWishlist = async () => {
      if (!user) {
@@ -83,10 +84,11 @@ export default function ProductCard({ product }) {
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 pt-1">
           <span className="text-base font-bold">₦{Number(product.price).toLocaleString()}</span>
           <button
-            onClick={() => addToCart(product)}  
-            className="text-xs uppercase tracking-wider border border-black px-4 py-1.5 hover:bg-black hover:text-white transition-all duration-200 w-full sm:w-auto"
+            onClick={() => addToCart(product)}
+            disabled={isOutOfStock}
+            className="text-xs uppercase tracking-wider border border-black px-4 py-1.5 hover:bg-black hover:text-white transition-all duration-200 w-full sm:w-auto disabled:cursor-not-allowed disabled:border-gray-300 disabled:bg-gray-100 disabled:text-gray-400 disabled:hover:bg-gray-100 disabled:hover:text-gray-400"
           >
-            Add 
+            {isOutOfStock ? 'Out of stock' : 'Add'}
           </button>
         </div>
       </div>

@@ -2,24 +2,43 @@
 import { useState } from 'react'
 import { FaStar, FaTimes } from 'react-icons/fa'
 
-export default function ReviewModal({ isOpen, onClose, orderId, productName }) {
+export default function ReviewModal({ isOpen, onClose, orderId, productId, productName, onSubmitted }) {
   const [rating, setRating] = useState(0)
   const [hoverRating, setHoverRating] = useState(0)
   const [comment, setComment] = useState('')
   const [submitted, setSubmitted] = useState(false)
+  const [error, setError] = useState('')
+  const [loading, setLoading] = useState(false)
 
   if (!isOpen) return null
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault()
-    console.log({ orderId, rating, comment })
-    setSubmitted(true)
-    setTimeout(() => {
-      setSubmitted(false)
-      onClose()
-      setRating(0)
-      setComment('')
-    }, 2000)
+    setLoading(true)
+    setError('')
+
+    try {
+      const response = await fetch('/api/reviews', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ orderId, productId, rating, comment })
+      })
+      const data = await response.json()
+      if (!response.ok || !data.success) throw new Error(data.message || 'Unable to submit review')
+      setSubmitted(true)
+      onSubmitted?.(productId)
+      setTimeout(() => {
+        setSubmitted(false)
+        onClose()
+        setRating(0)
+        setComment('')
+      }, 1200)
+    } catch (submitError) {
+      setError(submitError.message)
+    } finally {
+      setLoading(false)
+    }
   }
 
   return (
@@ -81,11 +100,14 @@ export default function ReviewModal({ isOpen, onClose, orderId, productName }) {
               required
             />
 
+            {error && <p className="text-sm text-red-600 mt-3">{error}</p>}
+
             <button
               type="submit"
-              className="w-full mt-4 bg-black text-white py-2.5 rounded-lg hover:bg-gray-800 transition text-sm font-medium"
+              disabled={loading || !rating}
+              className="w-full mt-4 bg-black text-white py-2.5 rounded-lg hover:bg-gray-800 transition text-sm font-medium disabled:opacity-50"
             >
-              Submit Review
+              {loading ? 'Submitting...' : 'Submit Review'}
             </button>
           </form>
         )}

@@ -25,6 +25,20 @@ export async function LoginAccount(req, res) {
 
   const loginUser = tableSelect.rows[0]; 
 
+  const isBanned = loginUser.is_active === false ||
+    loginUser.is_active === 0 ||
+    loginUser.is_active === 'false' ||
+    loginUser.is_active === '0'
+
+  if (loginUser.role === 'customer' && isBanned) {
+    req.session.destroy(() => {})
+    return res.status(403).json({
+      success: false,
+      code: 'USER_BANNED',
+      message: 'Sorry, you have been banned from this platform.'
+    })
+  }
+
   const dbPassword = loginUser.password; 
   const checkPassword = await bcrypt.compare(password, dbPassword);
   if(!checkPassword) {

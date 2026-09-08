@@ -64,15 +64,33 @@ export const initializePayment = async (req, res) => {
   }
 };
 
+
 export const verifyPayment = async (req, res) => {
   try {
     const { tx_ref, transaction_id } = req.query;
 
     if (!tx_ref) {
-      return res.status(400).json({ success: false, message: 'Missing transaction reference' });
+      return res.status(400).json({ 
+        success: false, 
+        message: 'Missing transaction reference' 
+      });
     }
 
-    // Verify with Flutterwave
+    // ✅ Check if payment already exists
+    const existingPayment = await query(
+      `SELECT id FROM payments WHERE transaction_reference = $1`,
+      [tx_ref]
+    );
+
+    if (existingPayment.rows.length > 0) {
+     
+      return res.json({ 
+        success: true, 
+        message: 'Payment already verified'
+      });
+    }
+
+    // ✅ Verify with Flutterwave
     const response = await axios.get(
       `https://api.flutterwave.com/v3/transactions/${transaction_id}/verify`,
       {
@@ -85,17 +103,14 @@ export const verifyPayment = async (req, res) => {
     const paymentData = response.data.data;
 
     if (paymentData.status === 'successful') {
-      // ✅ Try payment_reference first
+      // ✅ Find order
       let orderResult = await query(
         `SELECT id, user_id FROM orders WHERE payment_reference = $1`,
         [tx_ref]
       );
 
-      // ✅ If not found, extract order number correctly
       if (orderResult.rows.length === 0) {
         const orderNumber = extractOrderNumber(tx_ref);
-        console.log('📦 Looking up by order number:', orderNumber);
-        
         orderResult = await query(
           `SELECT id, user_id FROM orders WHERE order_number = $1`,
           [orderNumber]
@@ -103,7 +118,6 @@ export const verifyPayment = async (req, res) => {
       }
 
       if (orderResult.rows.length === 0) {
-        console.log('❌ Order not found for reference:', tx_ref);
         return res.status(404).json({
           success: false,
           message: 'Order not found'
@@ -111,7 +125,6 @@ export const verifyPayment = async (req, res) => {
       }
 
       const order = orderResult.rows[0];
-      console.log('✅ Order found:', order.id);
 
       // ✅ Update order
       await query(
@@ -149,22 +162,27 @@ export const verifyPayment = async (req, res) => {
         ]
       );
 
-      console.log('✅ Payment saved!');
-      res.redirect(`${baseUrl}/order-success`);
+     
+      return res.json({ 
+        success: true, 
+        message: 'Payment verified successfully'
+      });
       
     } else {
       console.log('❌ Payment failed:', paymentData.status);
-      res.redirect(`${baseUrl}/payment-failed`);
+      return res.status(400).json({ 
+        success: false, 
+        message: 'Payment failed' 
+      });
     }
   } catch (error) {
-    console.error('Verification error:', error.response?.data || error.message);
+    console.error('Verification error:', error);
     res.status(500).json({
       success: false,
       message: 'Payment verification failed',
     });
   }
 };
-
 export const webhook = async (req, res) => {
   try {
     const event = req.body;

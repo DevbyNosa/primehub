@@ -9,22 +9,19 @@ import SlideIn from '../components/animations/SlideIn'
 
 
 export default function ContactPage() {
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
+  const [subject, setSubject] = useState('');
+  const [message, setMessage] = useState('');
+  const [status, setStatus] = useState('idle');
+  const [response, setResponse] = useState('');
   useEffect(() => {
      document.title = "Contact - PrimeHub"
    }, [])
 
-  const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    subject: '',
-    message: ''
+  console.log({
+    name, email, subject, message
   })
-  const [status, setStatus] = useState('idle');
- 
-
-  const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value })
-  }
 
   const handleSubmit = async (e) => {
     e.preventDefault()
@@ -34,13 +31,26 @@ export default function ContactPage() {
       
       const res = await fetch('/api/contact', {
          method: 'POST',
-         body: JSON.stringify(formData)
-       })
-      setStatus('success');
+         body: JSON.stringify({
+          name, email, subject, message
+         })
+       });
 
-      console.log(res)
-      setFormData({ name: '', email: '', subject: '', message: '' });
-      setTimeout(() => setStatus('idle'), 3000)
+       const data = await res.json();
+
+       if(data.success) {
+         setStatus('success');
+         setResponse(data.message);
+         setFormData({ name: '', email: '', subject: '',  message: '' });
+         setTimeout(() => setStatus('idle'), 3000)
+       } else {
+        setStatus('error')
+        setResponse(data.message);
+         setTimeout(() => setStatus('idle'), 3000)
+       }
+     
+
+      
     } catch (error) {
       setStatus('error')
       setTimeout(() => setStatus('idle'), 3000)
@@ -112,8 +122,8 @@ export default function ContactPage() {
                   <input
                     type="text"
                     name="name"
-                    value={formData.name}
-                    onChange={handleChange}
+                    value={name}
+                    onChange={((e) => setName(e.target.value))}
                     className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-black"
                     placeholder='Enter Full name'
                     required
@@ -124,8 +134,8 @@ export default function ContactPage() {
                   <input
                     type="email"
                     name="email"
-                    value={formData.email}
-                    onChange={handleChange}
+                    value={email}
+                     onChange={((e) => setEmail(e.target.value))}
                     className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-black"
                     placeholder='Email Address'
                     required
@@ -138,8 +148,8 @@ export default function ContactPage() {
                 <input
                   type="text"
                   name="subject"
-                  value={formData.subject}
-                  onChange={handleChange}
+                  value={subject}
+                  onChange={((e) => setSubject(e.target.value))}
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-black"
                   placeholder='Subject title'
                   required
@@ -151,8 +161,8 @@ export default function ContactPage() {
                 <textarea
                   name="message"
                   rows="5"
-                  value={formData.message}
-                  onChange={handleChange}
+                  value={message}
+                  onChange={((e) => setMessage(e.target.value))}
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-black resize-none"
                   placeholder='Leave a message here...'
                   required
@@ -166,10 +176,12 @@ export default function ContactPage() {
               >
                 {status === 'loading' ? 'Sending...' : 'Send Message'}
               </button>
-
-              {status === 'success' && (
-                <p className="text-green-600 text-sm mt-3"> Message sent successfully!</p>
-              )}
+             {
+              response && (
+                <p className='text-green-500 text-md mt-3'>{response}</p>
+              )
+             }
+              
               {status === 'error' && (
                 <p className="text-red-500 text-sm mt-3"> Something went wrong. Please try again.</p>
               )}

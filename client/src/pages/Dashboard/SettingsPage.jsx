@@ -49,7 +49,7 @@ export default function SettingsPage() {
     setStatus('')
 
     try {
-      const res = await fetch('http://localhost:3000/api/customer/profile', {
+      const res = await fetch('/api/customer/profile', {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -82,7 +82,7 @@ export default function SettingsPage() {
 
   if (loading) {
     return (
-      <div className="flex h-screen overflow-hidden bg-gray-50">
+      <div className="flex flex-col md:flex-row h-screen overflow-hidden bg-gray-50">
         <SideBar />
         <div className="flex-1 flex items-center justify-center">
           <div className="text-center">
@@ -95,7 +95,7 @@ export default function SettingsPage() {
   }
 
   return (
-    <div className="flex h-screen overflow-hidden bg-gray-50">
+    <div className="flex flex-col md:flex-row h-screen overflow-hidden bg-gray-50">
       <SideBar />
 
       <div className="flex-1 overflow-y-auto p-6 lg:p-8">

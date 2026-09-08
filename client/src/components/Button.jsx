@@ -13,7 +13,7 @@ const Button = ({
   fullWidth = false,
 }) => {
   // Base styles
-  const baseStyles = 'inline-flex items-center justify-center font-semibold rounded-lg transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-offset-2'
+  const baseStyles = 'inline-flex items-center justify-center font-semibold  transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-offset-2 rounded-sm'
   
   // Size styles
   const sizes = {

@@ -43,7 +43,7 @@ e.preventDefault()
 setLoading(true)
 
 try {
-  const orderRes = await fetch('http://localhost:3000/api/orders', {
+  const orderRes = await fetch('/api/orders', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
@@ -66,7 +66,7 @@ try {
 
   const order = orderData.order
 
-  const paymentRes = await fetch('http://localhost:3000/api/payment/initialize', {
+  const paymentRes = await fetch('/api/payment/initialize', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
@@ -94,7 +94,7 @@ try {
 }
 }
 
-const states = ['Lagos', 'Abuja', 'Rivers', 'Oyo', 'Kano', 'Kaduna', 'Enugu', 'Delta', 'Edo', 'Borno', 'Anambra', 'Osun', 'Ondo', 'Ekiti', 'Bayelsa', 'Imo', 'Kogi', 'Niger', 'Benue', 'Cross River']
+const states = ['Lagos', 'Abuja', 'Rivers', 'Oyo', 'Kano', 'Kaduna', 'Enugu', 'Delta', 'Edo', 'Borno', 'Anambra', 'Osun', 'Ondo', 'Ekiti', 'Bayelsa', 'Imo', 'Kogi', 'Niger', 'Benue', 'Cross River', 'Kano','Port Harcourt', 'Bayelsa']
 
 return (
 <>
@@ -102,7 +102,7 @@ return (
   <div className="min-h-screen mt-15 bg-gray-50 py-12 px-4">
     <div className="max-w-6xl mx-auto">
       <div className="flex items-center gap-4 mb-8">
-        <Link to="/cart" className="text-gray-500 hover:text-black transition">
+        <Link to="/shop" className="text-gray-500 hover:text-black transition">
           <FaArrowLeft size={20} />
         </Link>
         <h1 className="text-3xl font-light tracking-tight">Checkout</h1>

@@ -18,6 +18,20 @@ import ProductDetailPage from './pages/ProductDetailsPage.jsx';
 import PublicRoute from './auth/protection/PublicRoute.jsx';
 import PaymentVerify from './pages/paymentVerify.jsx';
 import OrderSuccessPage from './pages/OrderSuccess.jsx';
+import AdminLogin from './pages/admin/LoginPage.jsx';
+import AdminProtectedRoute from './auth/protection/adminProtectedRoute.jsx';
+import AdminDashboard from './pages/admin/Dashboard/adminDashboard.jsx';
+import AdminProducts from './pages/admin/Dashboard/AdminProducts.jsx';
+import AdminAddProduct from './pages/admin/Dashboard/AdminAddProduct.jsx';
+import AdminEditProduct from './pages/admin/Dashboard/AdminPatchProduct.jsx';
+import AdminOrders from './pages/admin/Dashboard/AdminOrders.jsx';
+import AdminOrderDetail from './pages/admin/Dashboard/AdminViewOrder.jsx';
+import AdminUsers from './pages/admin/Dashboard/AdminUsers.jsx';
+import AdminReports from './pages/admin/Dashboard/ReportPage.jsx';
+import AdminSettings from './pages/admin/Dashboard/SettingsPage.jsx';
+import AdminCategories from './pages/admin/Dashboard/CategoryPage.jsx';
+import AdminNotifications from './pages/admin/Dashboard/NotificationsPage.jsx';
+import AdminMessages from './pages/admin/Dashboard/MessagesPage.jsx';
 
 function App() {
   
@@ -77,7 +91,81 @@ function App() {
       <OrderSuccessPage />
       </ProtectedRoute>
       } />
+
+      {/* Admin Routes */}
+      <Route path="/admin/login" element={<AdminLogin />} />
+
+      <Route path='/admin/dashboard' element={
+        <AdminProtectedRoute>
+          <AdminDashboard />
+        </AdminProtectedRoute>
+      } />
+      <Route path='/admin/products' element={
+        <AdminProtectedRoute>
+          <AdminProducts />
+        </AdminProtectedRoute>
+      } />
+      <Route path='/admin/products/new' element={
+        <AdminProtectedRoute>
+          <AdminAddProduct />
+        </AdminProtectedRoute>
+      } />
+    <Route path="/admin/products/edit/:id" element={
+      <AdminProtectedRoute>
+        <AdminEditProduct />
+      </AdminProtectedRoute>
+      } />
+
+      <Route path='/admin/orders' element={
+         <AdminProtectedRoute>
+          <AdminOrders />
+         </AdminProtectedRoute>
+      } />
+      
+    <Route path='/admin/orders/:id' element={
+      <AdminProtectedRoute>
+        <AdminOrderDetail />
+      </AdminProtectedRoute>
+    } />
+
+    <Route path='/admin/users' element={
+      <AdminProtectedRoute>
+        <AdminUsers />
+      </AdminProtectedRoute>
+    } />
+
+    <Route path="/admin/reports" element={
+      <AdminProtectedRoute>
+        <AdminReports />
+      </AdminProtectedRoute>
+    } />
+
+    <Route path="/admin/settings" element={
+      <AdminProtectedRoute>
+        <AdminSettings />
+      </AdminProtectedRoute>
+    } />
+
+    <Route path="/admin/categories" element={
+      <AdminProtectedRoute>
+        <AdminCategories />
+      </AdminProtectedRoute>
+    } />
+
+    <Route path="/admin/notifications" element={
+      <AdminProtectedRoute>
+        <AdminNotifications />
+      </AdminProtectedRoute>
+    } />
+
+    <Route path="/admin/messages" element={
+      <AdminProtectedRoute>
+        <AdminMessages />
+      </AdminProtectedRoute>
+    } />
     
+    
+
      <Route path="*" element={<NotFound />} />
 
     

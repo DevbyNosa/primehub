@@ -11,6 +11,8 @@ CREATE TABLE users (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
+ALTER TABLE users ADD COLUMN is_active BOOLEAN DEFAULT true;
+ALTER TABLE users ADD COLUMN address VARCHAR(300);
 
 -- ============ CATEGORIES ============
 CREATE TABLE categories (
@@ -23,6 +25,7 @@ CREATE TABLE categories (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
+ALTER TABLE categories ADD COLUMN updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP;
 -- ============ PRODUCTS ============
 CREATE TABLE products (
     id SERIAL PRIMARY KEY,
@@ -111,6 +114,8 @@ CREATE TABLE reviews (
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     UNIQUE(user_id, product_id)
 );
+
+ALTER TABLE reviews ADD COLUMN IF NOT EXISTS order_id INTEGER REFERENCES orders(id) ON DELETE CASCADE;
 
 -- ============ WISHLIST ============
 CREATE TABLE wishlist (

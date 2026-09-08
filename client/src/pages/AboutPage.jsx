@@ -1,4 +1,3 @@
-// client/src/pages/AboutPage.jsx
 import { Helmet } from 'react-helmet-async'
 import { FaTruck, FaShieldAlt, FaHeadset, FaLeaf } from 'react-icons/fa'
 import { useState, useEffect } from 'react'
@@ -151,7 +150,7 @@ export default function AboutPage() {
 
        
        <section className="bg-white text-black rounded-3xl p-8 sm:p-12 space-y-10 border border-gray-200">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center divide-y sm:divide-y-0 sm:divide-x divide-neutral-800">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center  ">
             <div className="pt-4 sm:pt-0">
               <p className="text-4xl sm:text-5xl font-extrabold text-gray-700">{counts.customers.toLocaleString()}+</p>
               <p className="text-xs font-medium uppercase tracking-wider text-neutral-400 mt-2">Happy Customers</p>

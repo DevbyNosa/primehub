@@ -36,7 +36,7 @@ export default function LoginAuthForm() {
 
       const data = await res.json();
 
-      if(data.success) {
+      if(data.success && res.ok) {
         setStatus('success');
         setMessage(data.message || 'Logged in successfully! 🎉');
         setEmail('');
@@ -47,7 +47,9 @@ export default function LoginAuthForm() {
         }, 3000)
       } else {
         setStatus('error');
-        setMessage(data.message || 'Something went wrong');
+        setMessage(data.code === 'USER_BANNED'
+          ? 'Sorry, you have been banned from this platform.'
+          : data.message || 'Something went wrong');
          setTimeout(() => {
         setStatus('idle')
         setMessage('');

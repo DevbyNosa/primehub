@@ -90,6 +90,39 @@ export async function getCategories(req, res) {
   }
 }
 
+export const toggleProductStatus = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const result = await query(
+      `UPDATE products 
+       SET is_active = NOT is_active, 
+           updated_at = NOW()
+       WHERE id = $1 
+       RETURNING *`,
+      [id]
+    );
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: 'Product not found'
+      });
+    }
+
+    res.json({
+      success: true,
+      product: result.rows[0]
+    });
+  } catch (error) {
+    console.error('Toggle product status error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to toggle product status'
+    });
+  }
+};
+
 export const getCategoryBySlug = async (req, res) => {
   try {
     const { slug } = req.params;
@@ -364,6 +397,99 @@ export const updateProductStock = async (req, res) => {
     res.status(500).json({
       success: false,
       message: 'Failed to update stock'
+    });
+  }
+};
+
+
+export const deleteProduct = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    
+    const productCheck = await query(
+      'SELECT * FROM products WHERE id = $1',
+      [id]
+    );
+
+    if (productCheck.rows.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: 'Product not found'
+      });
+    }
+
+    const orderCheck = await query(
+      'SELECT * FROM order_items WHERE product_id = $1 LIMIT 1',
+      [id]
+    );
+
+    if (orderCheck.rows.length > 0) {
+      
+      await query(
+        `UPDATE products 
+         SET is_active = false, 
+             updated_at = NOW(),
+             deleted_at = NOW()
+         WHERE id = $1`,
+        [id]
+      );
+
+      return res.json({
+        success: true,
+        message: 'Product deactivated (has order history)'
+      });
+    }
+
+  
+    await query(
+      'DELETE FROM products WHERE id = $1',
+      [id]
+    );
+
+    res.json({
+      success: true,
+      message: 'Product deleted successfully'
+    });
+
+  } catch (error) {
+    console.error('Delete product error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to delete product'
+    });
+  }
+};
+
+export const getProductById = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const result = await query(
+      `SELECT p.*, c.name as category_name 
+       FROM products p
+       LEFT JOIN categories c ON p.category_id = c.id
+       WHERE p.id = $1`,
+      [id]
+    );
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: 'Product not found'
+      });
+    }
+
+    res.json({
+      success: true,
+      product: result.rows[0]
+    });
+
+  } catch (error) {
+    console.error('Get product by id error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to fetch product'
     });
   }
 };

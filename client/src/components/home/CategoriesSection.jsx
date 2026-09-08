@@ -33,7 +33,7 @@ export default function CategoriesSection() {
             className="group relative overflow-hidden rounded-xl"
           >
             <img 
-              src={category.image || 'https://images.unsplash.com/photo-1519389950473-47ba0277781c?w=600&h=400&fit=crop'} 
+              src={category.imageUrl || 'https://images.unsplash.com/photo-1519389950473-47ba0277781c?w=600&h=400&fit=crop'} 
               alt={category.name}
               className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"
             />

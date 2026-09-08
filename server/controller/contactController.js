@@ -22,6 +22,10 @@ export async function contactController(req, res) {
    })
 
   } catch (error) {
-
+    console.error("Error Sending message", error);
+    res.status(500).json({
+      success: false,
+      message: "Unable to send message server error"
+    })
   }
 }

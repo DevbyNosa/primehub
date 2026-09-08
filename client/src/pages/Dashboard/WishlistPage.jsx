@@ -3,10 +3,12 @@ import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { FaHeart, FaShoppingCart, FaTrash, FaArrowRight } from 'react-icons/fa'
 import SideBar from '../../components/Dashboard/SideBar'
+import { useCart } from '../../components/context/CartContext'
 
 export default function WishlistPage() {
   const [wishlist, setWishlist] = useState([]);
   const [loading, setLoading] = useState(true);
+  const { addToCart } = useCart();
 
   useEffect(() => {
     async function fetchWishlist() {
@@ -36,14 +38,15 @@ export default function WishlistPage() {
     setWishlist(wishlist.filter(item => item.id !== id));
   };
 
-  const moveToCart = (id) => {
-    console.log('Added to cart:', id);
-    removeFromWishlist(id);
+  const moveToCart = (item) => {
+    if (addToCart(item)) {
+      removeFromWishlist(item.id);
+    }
   };
 
   if (loading) {
     return (
-      <div className="flex h-screen overflow-hidden bg-gray-50">
+      <div className="flex flex-col md:flex-row h-screen overflow-hidden bg-gray-50">
         <SideBar />
         <div className="flex-1 overflow-y-auto p-6 lg:p-8">
           <div className="text-center py-20">Loading...</div>
@@ -53,7 +56,7 @@ export default function WishlistPage() {
   }
 
   return (
-    <div className="flex h-screen overflow-hidden bg-gray-50">
+    <div className="flex flex-col md:flex-row h-screen overflow-hidden bg-gray-50">
       <SideBar />
 
       <div className="flex-1 overflow-y-auto p-6 lg:p-8">
@@ -119,10 +122,11 @@ export default function WishlistPage() {
                   <div className="flex items-center justify-between mt-3">
                     <span className="text-lg font-bold text-gray-900">₦{Number(item.price).toLocaleString()}</span>
                     <button 
-                      onClick={() => moveToCart(item.id)}
+                      onClick={() => moveToCart(item)}
+                      disabled={item.stock_quantity !== undefined && Number(item.stock_quantity) <= 0}
                       className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium bg-black text-white hover:bg-gray-800 transition"
                     >
-                      <FaShoppingCart size={14} /> Add to Cart
+                      <FaShoppingCart size={14} /> {item.stock_quantity !== undefined && Number(item.stock_quantity) <= 0 ? 'Out of Stock' : 'Add to Cart'}
                     </button>
                   </div>
                 </div>

@@ -14,18 +14,59 @@ export const CartProvider = ({ children }) => {
     localStorage.setItem('cart', JSON.stringify(cart))
   }, [cart])
 
+  useEffect(() => {
+    const refreshCartStock = async () => {
+      try {
+        const response = await fetch('/api/products')
+        const data = await response.json()
+
+        if (!response.ok || !data.success || !Array.isArray(data.products)) return
+
+        const availableProducts = new Map(data.products.map((product) => [product.id, product]))
+
+        setCart((currentCart) => currentCart.filter((item) => {
+          const product = availableProducts.get(item.id)
+          return product && Number(product.stock_quantity) > 0
+        }))
+      } catch (error) {
+        console.error('Error refreshing cart stock:', error)
+      }
+    }
+
+    refreshCartStock()
+    window.addEventListener('focus', refreshCartStock)
+
+    return () => window.removeEventListener('focus', refreshCartStock)
+  }, [])
+
   const addToCart = (product) => {
+    const hasStockLimit = product.stock_quantity !== undefined && product.stock_quantity !== null
+    const requestedQuantity = Math.max(1, Number(product.quantity) || 1)
+
+    if (hasStockLimit && Number(product.stock_quantity) <= 0) {
+      return false
+    }
+
     setCart((prev) => {
       const existing = prev.find((item) => item.id === product.id)
       if (existing) {
+        const nextQuantity = existing.quantity + requestedQuantity
+        if (hasStockLimit && existing.quantity >= Number(product.stock_quantity)) {
+          return prev
+        }
         return prev.map((item) =>
           item.id === product.id
-            ? { ...item, quantity: item.quantity + 1 }
+            ? { ...item, quantity: hasStockLimit
+              ? Math.min(nextQuantity, Number(product.stock_quantity))
+              : nextQuantity }
             : item
         )
       }
-      return [...prev, { ...product, quantity: 1 }]
+      return [...prev, { ...product, quantity: hasStockLimit
+        ? Math.min(requestedQuantity, Number(product.stock_quantity))
+        : requestedQuantity }]
     })
+    return true
   }
 
   const removeFromCart = (id) => {

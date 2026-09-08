@@ -1,10 +1,12 @@
 import { useEffect, useState } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
+import { useCart } from '../components/context/CartContext';
 
 export default function PaymentVerify() {
   const [searchParams] = useSearchParams();
   const [status, setStatus] = useState('verifying');
   const navigate = useNavigate();
+  const { clearCart } = useCart();
 
   useEffect(() => {
     const verify = async () => {
@@ -25,7 +27,7 @@ export default function PaymentVerify() {
 
         if (data.success) {
           setStatus('success');
-          localStorage.removeItem('cart');
+          clearCart();
           setTimeout(() => navigate('/order-success'), 2000);
         } else {
           setStatus('failed');

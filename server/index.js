@@ -5,19 +5,17 @@ import morgan from 'morgan';
 import compression from 'compression';
 import dotenv from 'dotenv';
 import { pool } from './config/database.js';
-import apiRoutes from './routes/api.js'
-import authRoutes from './routes/auth.js'  
-import pageRoutes from './routes/pages.js'
+import apiRoutes from './routes/api.js';
+import authRoutes from './routes/auth.js';
+import pageRoutes from './routes/pages.js';
+import adminRoutes from './routes/admin.js';
 import sessionConfig from './config/session.js'
-
-
 import path from 'path'
 import { fileURLToPath } from 'url'
+import { checkBanStatus } from './middleware/checkBanStatus.js';
 
-const __filename = fileURLToPath(import.meta.url)
-const __dirname = path.dirname(__filename)
-
-
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 dotenv.config();
 
@@ -61,11 +59,14 @@ app.use(express.urlencoded({ extended: true, limit: '50mb' }));
 
 
 app.use(sessionConfig);
+//app.use(checkBanStatus)
+
 
 // Routes
 app.use("/", apiRoutes);
 app.use("/api/auth", authRoutes);
-app.use("/", pageRoutes)
+app.use("/", pageRoutes);
+app.use("/api/admin", adminRoutes);
 
 // ============ ROUTES ============
 
