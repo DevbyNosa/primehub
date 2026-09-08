@@ -1,4 +1,6 @@
-const configuredApiUrl = import.meta.env.VITE_API_URL || '';
+const configuredApiUrl = import.meta.env.DEV
+	? (import.meta.env.VITE_API_URL || '')
+	: '';
 
 export const API_URL = configuredApiUrl.replace(/\/$/, '');
 
