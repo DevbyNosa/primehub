@@ -48,10 +48,20 @@ export const adminLogin = async (req, res) => {
       avatar: user.avatar
     };
 
-    res.json({
-      success: true,
-      message: 'Welcome Admin!',
-      user: req.session.user
+    req.session.save((saveError) => {
+      if (saveError) {
+        console.error('Admin session save error:', saveError);
+        return res.status(500).json({
+          success: false,
+          message: 'Could not start admin session'
+        });
+      }
+
+      res.json({
+        success: true,
+        message: 'Welcome Admin!',
+        user: req.session.user
+      });
     });
 
   } catch (error) {
