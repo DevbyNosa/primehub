@@ -1,3 +1,4 @@
+import { apiUrl } from '../../config.js'
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import PrimeHubLogo from '../assets/primehub_title.png'
@@ -66,7 +67,7 @@ export default function LoginAuthForm() {
   }
 
   const handleGoogleLogin = () => {
-    window.location.href = 'http://localhost:3000/api/auth/google'
+    window.location.href = apiUrl('/api/auth/google')
   }
 
   return (

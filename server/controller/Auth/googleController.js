@@ -2,6 +2,8 @@ import axios from "axios";
 import { query } from "../../config/database.js";
 import 'dotenv/config';
 
+const clientUrl = (process.env.CLIENT_URL || 'http://localhost:5173').replace(/\/$/, '');
+
 export async function GoogleRoutes (req, res) {
     const url = 'https://accounts.google.com/o/oauth2/v2/auth?' +
             'client_id=' + process.env.GOOGLE_CLIENT_ID +
@@ -17,7 +19,7 @@ export async function GoogleRoutes (req, res) {
 export async function GoogleAuthRegistration(req, res) {
    const { code } = req.query;
     if (!code) {
-        return res.redirect('/login?error=no_code');
+        return res.redirect(`${clientUrl}/login?error=no_code`);
     }
     try {
         const tokenRes = await axios.post(
@@ -64,9 +66,9 @@ export async function GoogleAuthRegistration(req, res) {
             avatar: user.rows[0].avatar,
         };
         
-        res.redirect('http://localhost:5173/dashboard');
+        res.redirect(`${clientUrl}/dashboard`);
     } catch (error) {
         console.error('Google OAuth Error:', error.response?.data || error.message);
-        res.redirect('/login?error=auth_failed');
+        res.redirect(`${clientUrl}/login?error=auth_failed`);
     }
 }

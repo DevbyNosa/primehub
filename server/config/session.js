@@ -4,6 +4,7 @@ import { pool } from './database.js'
 import 'dotenv/config'
 
 const PgSession = pgSession(session)
+const isProduction = process.env.NODE_ENV === 'production'
 
 const sessionConfig = session({
   store: new PgSession({
@@ -16,9 +17,9 @@ const sessionConfig = session({
   saveUninitialized: false,
   cookie: {
     maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
-    secure: process.env.NODE_ENV === 'production',
+    secure: isProduction,
     httpOnly: true,
-    sameSite: 'lax',
+    sameSite: isProduction ? 'none' : 'lax',
   },
 })
 

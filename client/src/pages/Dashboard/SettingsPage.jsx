@@ -1,3 +1,4 @@
+import { apiUrl } from '../../../config.js';
 
 import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
@@ -17,7 +18,7 @@ export default function SettingsPage() {
   useEffect(() => {
     const fetchProfile = async () => {
       try {
-        const res = await fetch('http://localhost:3000/api/customer/profile', {
+        const res = await fetch(apiUrl('/api/customer/profile'), {
           credentials: 'include'
         })
         const data = await res.json()
