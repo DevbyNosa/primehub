@@ -93,6 +93,16 @@ app.get('/api/404', (req, res) => {
     });
 });
 
+if (process.env.NODE_ENV === 'production') {
+  const clientPath = path.join(__dirname, '..', 'client', 'dist');
+  app.use(express.static(clientPath));
+  
+  // Handle React Router routes
+  app.get('*', (req, res) => {
+    res.sendFile(path.join(clientPath, 'index.html'));
+  });
+}
+
 app.use('/*splat', (req, res) => {  
     res.status(404).json({ message: 'Not found' })
 })
