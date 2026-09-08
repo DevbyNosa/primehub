@@ -101,7 +101,7 @@ if (process.env.NODE_ENV === 'production') {
   app.use(express.static(clientPath));
   
   // Handle React Router routes
-  app.get('*', (req, res) => {
+    app.get('/{*splat}', (req, res) => {
     res.sendFile(path.join(clientPath, 'index.html'));
   });
 }
