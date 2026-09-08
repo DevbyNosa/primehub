@@ -20,7 +20,6 @@ const sessionConfig = session({
     secure: isProduction,
     httpOnly: true,
     sameSite: isProduction ? 'none' : 'lax',
-    domain: '.onrender.com',
   },
 })
 
